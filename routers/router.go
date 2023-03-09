@@ -9,8 +9,12 @@ import (
 func InitRouter() {
 	r := gin.Default()
 	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
-	r.GET("/host", http.GetHost)
-	r.POST("/host", http.CreateHost)
+	r.GET("/hosts", http.GetHost)
+	r.POST("/hosts", http.CreateHost)
+	r.GET("/hosts/:id", http.DescribeHost)
+	r.PATCH("/hosts/:id", http.PatchHost)
+	r.PUT("/hosts/:id", http.UpdateHost)
+	r.DELETE("/hosts/:id", http.DeleteHost)
 
 	r.Run(":8080")
 }

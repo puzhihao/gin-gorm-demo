@@ -18,14 +18,40 @@ type Service interface {
 type QueryHostRequest struct {
 	PageSize   int
 	PageNumber int
+	Keywords   string
 }
 
 type DescribeHostRequest struct {
 	Id string
 }
+
+const (
+	PATCH = 0
+	PUT   = 1
+)
+
+type UpdateMode int
 type UpdateHostRequest struct {
-	Id string
+	*Resource
+	*DescribeHost
+	UpdateMode
 }
 type DeleteHostRequest struct {
 	Id string
+}
+
+func NewPatchUpdateHostRequest() *UpdateHostRequest {
+	return &UpdateHostRequest{
+		UpdateMode:   PATCH,
+		Resource:     &Resource{},
+		DescribeHost: &DescribeHost{},
+	}
+}
+
+func NewPutUpdateHostRequest() *UpdateHostRequest {
+	return &UpdateHostRequest{
+		UpdateMode:   PUT,
+		Resource:     &Resource{},
+		DescribeHost: &DescribeHost{},
+	}
 }

@@ -1,6 +1,10 @@
 package host
 
-import "github.com/go-playground/validator/v10"
+import (
+	"github.com/go-playground/validator/v10"
+	"github.com/imdario/mergo"
+	"time"
+)
 
 // 限制传参
 var (
@@ -34,11 +38,11 @@ type Host struct {
 }
 
 type Resource struct {
-	Id          string            `json:"id" validate:"required"`        //全局唯一id
+	Id          string            `json:"id" `                           //全局唯一id
 	Vendor      Vendor            `json:"vendor" validate:"required"`    //厂商
 	Region      string            `json:"regionId"validate:"required"`   //地域
 	Zone        string            `json:"zone"`                          //可用区
-	CreateAt    int64             `json:"create_at"validate:"required"`  //创建时间
+	CreateAt    int64             `json:"create_at"`                     //创建时间
 	ExpireAt    int64             `json:"expire_at"`                     //过期时间
 	Category    string            `json:"category"`                      //实例的类型
 	Type        string            `json:"type"`                          //实例的规格
@@ -81,4 +85,27 @@ func (s *Set) ADD(itme *Host) {
 type Set struct {
 	Total int64   `json:"total"`
 	Items []*Host `json:"items"`
+}
+
+func (h *Host) Patch(res *Resource, desc *DescribeHost) error {
+	h.UpdateAt = time.Now().UnixMilli()
+	if res != nil {
+		err := mergo.MergeWithOverwrite(h.Resource, res)
+		if err != nil {
+			return err
+		}
+	}
+	if desc != nil {
+		err := mergo.MergeWithOverwrite(h.DescribeHost, desc)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+
+}
+func (h *Host) Update(res *Resource, desc *DescribeHost) {
+	h.Resource = res
+	h.DescribeHost = desc
+	h.UpdateAt = time.Now().UnixMilli()
 }
